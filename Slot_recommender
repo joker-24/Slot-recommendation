@@ -1,20 +1,4 @@
-## Install packages
-
-
-%pip install meza
-%pip install -U -q PyDrive
-%pip install surprise
-%pip install mdbtools
-%pip install kora -q
-%pip install pandas_access
-%pip install pyodbc
-%pip install selenium
-%pip install webdriver_manager
-
-
-
-## Import packages
-
+# Import packages
 
 import pandas as pd
 import numpy as np
@@ -60,7 +44,6 @@ sns.set_style('white')
 Estrazioni features dei giochi
 
 my = pd.read_excel(r"games.xlsx")
-my
 my_games = my["my"].drop_duplicates()
 lista = list(my_games)
 
@@ -69,12 +52,11 @@ slot_catalog = my["Slot Catalog"][:7555]
 slot_catalog = pd.DataFrame(slot_catalog)
 slot_catalog["genre"] = genre
 slot_catalog['my'] = my_games
-my_games
+my_games   
+
+
 current_html = []
-
 for game in lista:
-
-
     url = "https://slotcatalog.com/it"
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument(r'user-data-dir=C:\Users\cesma2022\AppData\Local\Google\Chrome\Selenium')
@@ -96,7 +78,6 @@ for game in lista:
 
             except NoSuchElementException:
                 break
-
     driver.quit()
 
 current_soup =[]
@@ -106,8 +87,6 @@ for i in range(747):
 div = []
 for s in range(747):
         div.append(current_soup[s].find('div',{"class":"slotAttrReview"}))
-
-
 
 table = []
 for i in range(747):
@@ -126,7 +105,7 @@ for i in range(747):
 title
 df_title = pd.DataFrame(title)
 df_title.rename(columns={0:'Title'},inplace=True)
-df_title.to_excel('df_title.xlsx')
+df_title.to_excel('df_title.xlsx') 
 
 df_title
 df_title.set_index('Title',drop=True,inplace=True)
@@ -134,8 +113,7 @@ pd_table = pd.read_html(str(table))
 x = pd_table[0].T
 y = pd_table[1].T.drop(0)
 z = x.append(y)
-z
-len(pd_table)
+
 c = []
 for i in range(743):
     c.append(pd_table[i].T.drop(0))
@@ -159,19 +137,22 @@ x['RTP:'] = x['RTP:'].fillna('')
 x['Altri : Grigio, Nero, Carta, Casinò dal vivo, Manganello, patata fritta'] = x['Altri : Grigio, Nero, Carta, Casinò dal vivo, Manganello, patata fritta'].fillna('')
 x['Genere: N/A'] = x['Genere: N/A'].fillna('')
 features_ = x['Tipo:']+' '+x['Frequenza di vincita:']+' '+x['Oggetti: N/A']+' '+x['Tema: Gioco di carte']+' '+x['RTP:']+' '+x['Altri : Grigio, Nero, Carta, Casinò dal vivo, Manganello, patata fritta']+' '+x['Genere: N/A']
+
 vectorizer =  TfidfVectorizer()
 features_vector = vectorizer.fit_transform(features_)
 similarity = cosine_similarity(features_vector)
+
 game = input('Enter game:')
 game_list = x['Title'].tolist()
 matching_game = difflib.get_close_matches(game,game_list)
 print(matching_game)
+
 close_match = matching_game[0]
 close_index = x[x.Title==close_match].index.values[0]
 similarity_score = list(enumerate(similarity[close_index]))
 similarity_score
 sorted_similarities = sorted(similarity_score,key=lambda x:x[1],reverse=True)
-(sorted_similarities)
+
 i=1
 for movie in sorted_similarities:
     indexx = movie[0]
@@ -210,6 +191,7 @@ sample.groupby("GAME")["rating"].count().sort_values(ascending=False)
 ratings = pd.DataFrame(sample.groupby("GAME")["rating"].mean())
 ratings["num_ratings"] = pd.DataFrame(sample.groupby("GAME")["rating"].count())
 ratings
+
 plt.figure(figsize=(10,4))
 ratings['num_ratings'].hist(bins=70)
 ratings["rating"].hist()
